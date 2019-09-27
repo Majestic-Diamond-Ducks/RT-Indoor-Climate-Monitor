@@ -8,15 +8,15 @@ import java.util.Map;
 public class SensorConnectionThread extends Thread    {
     private final Socket clientSocket;
     private final SensorServer server;
-    private String clientName;
+    private String clientName; //Client name
 
-    private long responseNumber;
-    private Map<String, Float> values;
+    private long responseNumber; //Number of responses
+    private Map<String, Float> values; //map of all values
 
     public SensorConnectionThread(SensorServer server, Socket clientSocket) {
         this.server = server;
         this.clientSocket = clientSocket;
-        this.clientName = clientSocket.getInetAddress().getHostName();
+        this.clientName = clientSocket.getInetAddress().getHostName(); //Client IP address
         values = new HashMap<>();
         setupValuesMap();
     }
@@ -35,20 +35,20 @@ public class SensorConnectionThread extends Thread    {
                 else    { //If line is empty, create and print json
                     JSONObject json = new JSONObject(sb.toString());
                     sb.setLength(0); //Reset String builder
-                    handleSensorResponse(json);
-                    printHandledValues(json);
+                    handleSensorResponse(json); //Handle json document
+                    printHandledValues(json); //Print handled values
                 }
             }
-            clientSocket.close();
+            clientSocket.close(); //Close socket when connection ends
 
         } catch (IOException ex) {
             System.out.println("Network error: " + ex.getMessage());
         }
-
+        //Disconnect thread
         disconnect();
     }
 
-    private void handleSensorResponse(JSONObject json)   {
+    private void handleSensorResponse(JSONObject json)   { //Handles the values from the client sent json document
         this.responseNumber++;
 
         //Handle temperature values
@@ -81,7 +81,7 @@ public class SensorConnectionThread extends Thread    {
         values.put(k + "_AVG", (values.get(k + "_AVG") + ((f - values.get(k + "_AVG"))/responseNumber)));
     }
 
-    private void printHandledValues(JSONObject json)    {
+    private void printHandledValues(JSONObject json)    { //Used for printing debug message in the console
         System.out.println(" ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ");
         System.out.println("-=-" + this.clientName + " | " + json.getString("N") + "-=-");
         System.out.println("Response number: \t" + this.responseNumber);
@@ -93,14 +93,14 @@ public class SensorConnectionThread extends Thread    {
         System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
     }
 
-    private String formatValues(String k)    {
+    private String formatValues(String k)    { //Formats float values for print only
         return String.format("%.02f", values.get(k)) +
                 "\tMin: " + String.format("%.02f", values.get(k +"_MIN")) +
                 "\tMax: " + String.format("%.02f", values.get(k + "_MAX")) +
                 "\tAvg: " + String.format("%.02f", values.get(k + "_AVG"));
     }
 
-    private void setupValuesMap()   {
+    private void setupValuesMap()   { //Sets up the initial has hmap with keys and values
         values.put("T", 0f);
         values.put("T_MIN", 0f);
         values.put("T_MAX", 0f);

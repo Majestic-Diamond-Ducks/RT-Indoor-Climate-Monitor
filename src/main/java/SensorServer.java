@@ -11,6 +11,7 @@ public class SensorServer {
     public SensorServer(int port) throws IOException {
         connectedSensors = new HashMap<>();
         try {
+            //Create server socket
             serverSocket = new ServerSocket(port);
         }
         catch(IOException e) {
@@ -20,16 +21,19 @@ public class SensorServer {
 
     public void startServer()  {
         System.out.println("Server started");
-        while(true) {
+        while(true) { //Keep this running (almost) forever
             try {
                 Socket newClient = serverSocket.accept();
 
+                //Create a new thread when a new client is accepted
                 SensorConnectionThread sensorClientThread = new SensorConnectionThread(this, newClient);
                 System.out.println("New client created");
 
+                //Start client thread
                 sensorClientThread.start();
                 System.out.println("New client started");
 
+                //Put client in table containing all clients
                 connectedSensors.put(sensorClientThread.getClientName(), sensorClientThread);
                 System.out.println("New client put in table");
 
@@ -40,6 +44,7 @@ public class SensorServer {
         }
     }
 
+    //Remove client from table
     public void disconnectClient(String clientName) {
         connectedSensors.remove(clientName);
         System.out.println("Client disconnected");

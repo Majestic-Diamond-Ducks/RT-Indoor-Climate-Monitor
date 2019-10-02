@@ -1,5 +1,6 @@
 package Communication;
 
+import Data.ValueStorageBox;
 import Data.ValueTable;
 import Enums.ValueTableIdentifier;
 import org.json.JSONObject;
@@ -13,13 +14,14 @@ public class SensorConnectionThread extends Thread    {
 
     private long responseNumber; //Number of responses
 
-    private ValueTable values;
+    private ValueStorageBox valueStorageBox;
 
-    public SensorConnectionThread(SensorServer server, Socket clientSocket) {
+    public SensorConnectionThread(SensorServer server, Socket clientSocket, ValueStorageBox valueStorageBox) {
         this.server = server;
         this.clientSocket = clientSocket;
         this.clientName = clientSocket.getInetAddress().getHostName(); //Client IP address
-        this.values = new ValueTable();
+        this.valueStorageBox = valueStorageBox;
+        valueStorageBox.addClient(this.clientName);
     }
 
     @Override
@@ -52,11 +54,7 @@ public class SensorConnectionThread extends Thread    {
     private void handleSensorResponse(JSONObject json)   { //Handles the values from the client sent json document
         this.responseNumber++;
 
-        values.putValue(json.getFloat("T"), responseNumber, ValueTableIdentifier.TEMP);
-        values.putValue(json.getFloat("H"), responseNumber, ValueTableIdentifier.HUMIDITY);
-        values.putValue(json.getFloat("L"), responseNumber, ValueTableIdentifier.LIGHT);
-        values.putValue(json.getFloat("C"), responseNumber, ValueTableIdentifier.CO2);
-        values.putValue(json.getFloat("D"), responseNumber, ValueTableIdentifier.DUST);
+        valueStorageBox.updateValues(this.clientName, responseNumber, json);
     }
 
     private void printHandledValues(JSONObject json)    { //Used for printing debug message in the console
@@ -72,10 +70,11 @@ public class SensorConnectionThread extends Thread    {
     }
 
     private String formatValues(ValueTableIdentifier k)    { //Formats float values for print only
-        return String.format("%.02f", values.getValues(k)[0]) +
-                "\tMin: " + String.format("%.02f", values.getValues(k)[1]) +
-                "\tMax: " + String.format("%.02f", values.getValues(k)[2]) +
-                "\tAvg: " + String.format("%.02f", values.getValues(k)[3]);
+        float [] returnedValues = valueStorageBox.getValues(this.clientName, k);
+        return String.format("%.02f", returnedValues[0]) +
+                "\tMin: " + String.format("%.02f", returnedValues[1]) +
+                "\tMax: " + String.format("%.02f", returnedValues[2]) +
+                "\tAvg: " + String.format("%.02f", returnedValues[3]);
     }
 
     public String getClientName()  {

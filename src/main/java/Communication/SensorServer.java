@@ -1,5 +1,7 @@
 package Communication;
 
+import Data.ValueStorageBox;
+
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
@@ -9,8 +11,10 @@ public class SensorServer {
 
     private ServerSocket serverSocket;
     private final Map<String, SensorConnectionThread> connectedSensors;
+    private ValueStorageBox valueStorageBox;
 
-    public SensorServer(int port) throws IOException {
+    public SensorServer(int port, ValueStorageBox valueStorageBox) throws IOException {
+        this.valueStorageBox = valueStorageBox;
         connectedSensors = new HashMap<>();
         try {
             //Create server socket
@@ -28,7 +32,7 @@ public class SensorServer {
                 Socket newClient = serverSocket.accept();
 
                 //Create a new thread when a new client is accepted
-                SensorConnectionThread sensorClientThread = new SensorConnectionThread(this, newClient);
+                SensorConnectionThread sensorClientThread = new SensorConnectionThread(this, newClient, valueStorageBox);
                 System.out.println("New client created");
 
                 //Start client thread

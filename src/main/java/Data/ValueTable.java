@@ -51,15 +51,4 @@ public class ValueTable {
 
         return returnValues;
     }
-
-    public void debugPrintTable()    {
-        int i = 0;
-        for(float f : values) {
-            System.out.print(i + " : "+ f + " \t|\t");
-            i++;
-            if(i%4 == 0)    {
-                System.out.println("\n=========================");
-            }
-        }
-    }
 }

@@ -22,8 +22,10 @@ public class ValueStorageBox {
 
             //TODO Thread safe the removal of the value table entry
             clientsValuesMap.remove(clientName); //remove old table if that is the case
+            System.out.println("Old client detected. Removing old value table");
         }
         clientsValuesMap.put(clientName, new ValueTable());
+        System.out.println("Client value table created");
     }
 
     public void updateValues(String clientName, long responseNumber, JSONObject json) {

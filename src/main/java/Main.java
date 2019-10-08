@@ -1,5 +1,4 @@
 import Communication.SensorServer;
-import Data.ValueStorageBox;
 
 import java.io.IOException;
 
@@ -10,8 +9,7 @@ public class Main {
         final int PORT = 6789;
 
         try { //Try to create and start server
-            ValueStorageBox valueStorageBox = new ValueStorageBox(); //TODO find an efficient way to refference the storage box
-            SensorServer server = new SensorServer(PORT, valueStorageBox);
+            SensorServer server = new SensorServer(PORT);
             server.startServer();
         }
         catch(IOException e)    {

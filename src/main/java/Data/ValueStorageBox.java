@@ -9,9 +9,17 @@ import java.util.Map;
 public class ValueStorageBox {
 
     private Map<String, ValueTable> clientsValuesMap; //Contains client name and values
+    private static ValueStorageBox valueStorageBox;
 
-    public ValueStorageBox()    {
+    private ValueStorageBox()    {
         clientsValuesMap = new HashMap<>();
+    }
+
+    public static ValueStorageBox getStorageBox()    {
+        if(null == valueStorageBox) {
+            valueStorageBox = new ValueStorageBox();
+        }
+        return valueStorageBox;
     }
 
     //TODO Threadsafe this entire god damn thing
@@ -30,6 +38,9 @@ public class ValueStorageBox {
 
     public void updateValues(String clientName, long responseNumber, JSONObject json) {
         //TODO Threadsafe the value table when updating values
+        if(!clientsValuesMap.containsKey(clientName))   {
+            addClient(clientName);
+        }
         clientsValuesMap.get(clientName).putValue(json.getFloat("T"), responseNumber, ValueTableIdentifier.TEMP);
         clientsValuesMap.get(clientName).putValue(json.getFloat("H"), responseNumber, ValueTableIdentifier.HUMIDITY);
         clientsValuesMap.get(clientName).putValue(json.getFloat("L"), responseNumber, ValueTableIdentifier.LIGHT);
@@ -41,5 +52,4 @@ public class ValueStorageBox {
     public float[] getValues(String clientName, ValueTableIdentifier k)    {
         return clientsValuesMap.get(clientName).getValues(k);
     }
-
 }

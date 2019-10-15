@@ -23,8 +23,9 @@ public class SensorServer {
 
     public void startServer()  {
         System.out.println("Server started");
-        while(true) { //Keep this running (almost) forever
-            try {
+
+        try {
+            while(true) { //Keep this running (almost) forever
                 Socket newClient = serverSocket.accept();
 
                 //Create a new thread when a new client is accepted
@@ -38,11 +39,10 @@ public class SensorServer {
                 //Put client in table containing all clients
                 connectedSensors.put(sensorClientThread.getClientIP(), sensorClientThread);
                 System.out.println("New client put in table");
-
             }
-            catch(IOException e) {
-                System.err.println("Error accepting socket\n" + e.getMessage());
-            }
+        }
+        catch(IOException e) {
+            System.err.println("Error accepting socket\n" + e.getMessage());
         }
     }
 

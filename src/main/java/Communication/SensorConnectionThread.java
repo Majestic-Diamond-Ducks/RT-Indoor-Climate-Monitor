@@ -53,7 +53,8 @@ public class SensorConnectionThread extends Thread    {
         }
 
         valueStorageBox.updateValues(this.clientName, json);
-        valueStorageBox.printValuesFromClient(this.clientName, this.IP); //Prints the values. mainly for debug
+
+        valueStorageBox.printSensorValueDebugMessage(this.clientName, this.IP); //Prints the values. mainly for debug
     }
 
     public String getClientIP() {

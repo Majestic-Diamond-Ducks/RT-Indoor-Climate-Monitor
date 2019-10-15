@@ -2,7 +2,7 @@ package Data;
 
 import Enums.ValueTableIdentifier;
 
-public class ValueTable {
+public class SensorValues {
 
     //TODO rename to something amongst the lines of "Sensor values"
 
@@ -25,7 +25,7 @@ public class ValueTable {
     private float [] values;
     private long responseNumber;
 
-    public ValueTable() {
+    public SensorValues() {
         this.values = new float[20];
         this.responseNumber = 0;
     }

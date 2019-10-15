@@ -4,6 +4,8 @@ import Enums.ValueTableIdentifier;
 
 public class ValueTable {
 
+    //TODO rename to something amongst the lines of "Sensor values"
+
     /*
     Contains all values sent by the sensor as well as calculated values
     Array positions correspond to values
@@ -21,34 +23,50 @@ public class ValueTable {
      */
 
     private float [] values;
+    private long responseNumber;
 
     public ValueTable() {
-        values = new float[20];
+        this.values = new float[20];
+        this.responseNumber = 0;
+    }
+
+    public void incrementResponseNumber()   {
+        this.responseNumber++;
     }
 
     //Response number used for avg, calculation
-    public void putValue(float value, long responseNumber, ValueTableIdentifier k)   {
-        int offset = k.getValue()*4;
+    public void putValue(float value, ValueTableIdentifier v)   {
 
-        values[offset] = value;
+        int offset = v.getValue()*4;
+        this.values[offset] = value;
 
-        if(values[1 + offset] > value || responseNumber == 1) {
-            values[1 + offset] = value;
+        if(this.values[1 + offset] > value || this.responseNumber == 1) {
+            this.values[1 + offset] = value;
         }
 
-        if(values[2 + offset] < value || responseNumber == 1) {
-            values[2 + offset] = value;
+        if(this.values[2 + offset] < value || this.responseNumber == 1) {
+            this.values[2 + offset] = value;
         }
-        values[3 + offset] = values[3 + offset] + ((value - values[3 + offset])/responseNumber);
+        this.values[3 + offset] = this.values[3 + offset] + ((value - this.values[3 + offset])/this.responseNumber);
     }
 
-    //Returns a 4 long sub-array with values as: current = [0], min = [1], max = [2], avg = [3]
-    public float[] getValues(ValueTableIdentifier k)  {
-        float [] returnValues = new float[4];
-        int beginningOffset = k.getValue()*4;
+    public float getLast(ValueTableIdentifier v)  {
+        return this.values[v.getValue()*4];
+    }
 
-        System.arraycopy(values, beginningOffset, returnValues,0, returnValues.length);
+    public float getMin(ValueTableIdentifier v)  {
+        return this.values[(v.getValue()*4)+1];
+    }
 
-        return returnValues;
+    public float getMax(ValueTableIdentifier v)  {
+        return this.values[(v.getValue()*4)+2];
+    }
+
+    public float getAvg(ValueTableIdentifier v)  {
+        return this.values[(v.getValue()*4)+3];
+    }
+
+    public long getResponseNumber() {
+        return this.responseNumber;
     }
 }

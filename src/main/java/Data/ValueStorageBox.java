@@ -36,20 +36,41 @@ public class ValueStorageBox {
         System.out.println("Client value table created");
     }
 
-    public void updateValues(String clientName, long responseNumber, JSONObject json) {
+    public void updateValues(String clientName, JSONObject json) {
         //TODO Threadsafe the value table when updating values
         if(!clientsValuesMap.containsKey(clientName))   {
             addClient(clientName);
         }
-        clientsValuesMap.get(clientName).putValue(json.getFloat("T"), responseNumber, ValueTableIdentifier.TEMP);
-        clientsValuesMap.get(clientName).putValue(json.getFloat("H"), responseNumber, ValueTableIdentifier.HUMIDITY);
-        clientsValuesMap.get(clientName).putValue(json.getFloat("L"), responseNumber, ValueTableIdentifier.LIGHT);
-        clientsValuesMap.get(clientName).putValue(json.getFloat("C"), responseNumber, ValueTableIdentifier.CO2);
-        clientsValuesMap.get(clientName).putValue(json.getFloat("D"), responseNumber, ValueTableIdentifier.DUST);
+        clientsValuesMap.get(clientName).incrementResponseNumber();
+        clientsValuesMap.get(clientName).putValue(json.getFloat("T"), ValueTableIdentifier.TEMP);
+        clientsValuesMap.get(clientName).putValue(json.getFloat("H"), ValueTableIdentifier.HUMIDITY);
+        clientsValuesMap.get(clientName).putValue(json.getFloat("L"), ValueTableIdentifier.LIGHT);
+        clientsValuesMap.get(clientName).putValue(json.getFloat("C"), ValueTableIdentifier.CO2);
+        clientsValuesMap.get(clientName).putValue(json.getFloat("D"), ValueTableIdentifier.DUST);
     }
 
-    //TODO possible change the return value to something more sophisticated
-    public float[] getValues(String clientName, ValueTableIdentifier k)    {
-        return clientsValuesMap.get(clientName).getValues(k);
+    /*
+        ######## DEBUG ########
+        Prints the values for a given client. Use this mainly for debugging and ensuring values are correct.
+        //TODO Disable or remove this when we have a web client up and running
+     */
+    public void printValuesFromClient(String clientName, String IP)    {
+        System.out.println(" ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾");
+        System.out.println("-=- " + clientName + " | " + IP + " -=-");
+        System.out.println("Response number: " + clientsValuesMap.get(clientName).getResponseNumber()); //Possible move response number to the value table
+        System.out.println("TEMP: \t" + formatValues(clientName, ValueTableIdentifier.TEMP));
+        System.out.println("HMDT: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
+        System.out.println("LGHT: \t" + formatValues(clientName, ValueTableIdentifier.LIGHT));
+        System.out.println("CO2: \t" + formatValues(clientName, ValueTableIdentifier.CO2));
+        System.out.println("DUST: \t" + formatValues(clientName, ValueTableIdentifier.DUST));
+        System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
+    }
+
+    private String formatValues(String clientName, ValueTableIdentifier v)    { //Formats float values for print only
+
+        return String.format("%.02f", clientsValuesMap.get(clientName).getLast(v)) +
+                "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMin(v)) +
+                "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMax(v)) +
+                "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvg(v));
     }
 }

@@ -8,10 +8,10 @@ import java.util.Map;
 public class SensorServer {
 
     private ServerSocket serverSocket;
-    //private final Map<String, SensorConnectionThread> connectedSensors; //Find some use for this or scrap it
+    private final Map<String, SensorConnectionThread> connectedSensors; //Map of client IPs and their sensor threads
 
     public SensorServer(int port) throws IOException {
-        //connectedSensors = new HashMap<>();
+        connectedSensors = new HashMap<>();
         try {
             //Create server socket
             serverSocket = new ServerSocket(port);
@@ -36,7 +36,7 @@ public class SensorServer {
                 System.out.println("New client started");
 
                 //Put client in table containing all clients
-                //connectedSensors.put(sensorClientThread.getClientName(), sensorClientThread);
+                connectedSensors.put(sensorClientThread.getClientIP(), sensorClientThread);
                 System.out.println("New client put in table");
 
             }
@@ -47,8 +47,8 @@ public class SensorServer {
     }
 
     //Remove client from table
-    public void disconnectClient(String clientName) {
-        //connectedSensors.remove(clientName);
+    public void disconnectClient(String clientIP) {
+        connectedSensors.remove(clientIP);
         System.out.println("Client disconnected");
     }
 }

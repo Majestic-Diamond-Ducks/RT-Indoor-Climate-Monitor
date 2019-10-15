@@ -1,5 +1,4 @@
 import Communication.SensorServer;
-import Data.ValueStorageBox;
 
 import java.io.IOException;
 

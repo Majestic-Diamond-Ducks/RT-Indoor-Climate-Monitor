@@ -18,7 +18,7 @@ public class ValueStorageBox {
         this.available = true;
     }
 
-    public static ValueStorageBox getStorageBox()    {
+    public static synchronized ValueStorageBox getStorageBox()    {
         if(null == valueStorageBox) {
             valueStorageBox = new ValueStorageBox();
         }
@@ -97,7 +97,7 @@ public class ValueStorageBox {
         System.out.println("-=- " + clientName + " | " + IP + " -=-");
         System.out.println("Response number: " + clientsValuesMap.get(clientName).getResponseNumber()); //Possible move response number to the value table
         System.out.println("TEMP: \t" + formatValues(clientName, ValueTableIdentifier.TEMP));
-        System.out.println("HMDT: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
+        System.out.println("HUM: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
         System.out.println("LGHT: \t" + formatValues(clientName, ValueTableIdentifier.LIGHT));
         System.out.println("CO2: \t" + formatValues(clientName, ValueTableIdentifier.CO2));
         System.out.println("DUST: \t" + formatValues(clientName, ValueTableIdentifier.DUST));
@@ -108,9 +108,9 @@ public class ValueStorageBox {
     }
 
     private String formatValues(String clientName, ValueTableIdentifier v)    { //Formats float values for print only
-        return String.format("%.02f", clientsValuesMap.get(clientName).getLast(v)) +
-                "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMin(v)) +
-                "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMax(v)) +
-                "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvg(v));
+        return String.format("%.02f", clientsValuesMap.get(clientName).getLastValue(v)) +
+                "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMinValue(v)) +
+                "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMaxValue(v)) +
+                "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvgValue(v));
     }
 }

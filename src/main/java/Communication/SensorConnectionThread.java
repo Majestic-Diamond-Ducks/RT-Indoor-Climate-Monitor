@@ -5,24 +5,23 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.*;
 
-public class SensorConnectionThread extends Thread    {
-    private final Socket clientSocket;
+public class SensorConnectionThread extends AbstractClient{
+
     private final SensorServer server;
     private String clientName; //Client name
-    private String IP;
 
     private ValueStorageBox valueStorageBox;
 
     public SensorConnectionThread(SensorServer server, Socket clientSocket) {
+        super(clientSocket);
         this.server = server;
-        this.clientSocket = clientSocket;
-        this.IP = clientSocket.getInetAddress().getHostName(); //Client IP address
         this.valueStorageBox = ValueStorageBox.getStorageBox();
     }
 
     @Override
     public void run()   {
-        try (BufferedReader bReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));){
+        System.out.println("Sensor thread started");
+        try (BufferedReader bReader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));){
 
             StringBuilder sb = new StringBuilder();
             String msgIn;
@@ -37,10 +36,10 @@ public class SensorConnectionThread extends Thread    {
                     handleSensorResponse(json); //Handle json document
                 }
             }
-            clientSocket.close(); //Close socket when connection ends
+            this.getSocket().close(); //Close socket when connection ends
 
-        } catch (IOException ex) {
-            System.out.println("Network error: " + ex.getMessage());
+        } catch (IOException e) {
+            System.out.println("Network error: " + e.getMessage());
         }
         //Disconnect thread
         disconnect();
@@ -54,11 +53,7 @@ public class SensorConnectionThread extends Thread    {
 
         valueStorageBox.updateValues(this.clientName, json);
 
-        valueStorageBox.printSensorValueDebugMessage(this.clientName, this.IP); //Prints the values. mainly for debug
-    }
-
-    public String getClientIP() {
-        return this.IP;
+        valueStorageBox.printSensorValueDebugMessage(this.clientName, this.getIP()); //Prints the values. mainly for debug
     }
 
     private void setClientName(String clientName) {
@@ -67,6 +62,6 @@ public class SensorConnectionThread extends Thread    {
     }
 
     private void disconnect()   {
-        server.disconnectClient(this.IP);
+        server.disconnectClient(this.getIP());
     }
 }

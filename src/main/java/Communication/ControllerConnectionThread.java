@@ -4,7 +4,7 @@ import Data.ValueStorageBox;
 
 import java.net.Socket;
 
-public class ControllerConnectionThread extends AbstractClient  {
+public class ControllerConnectionThread extends AbstractTimerClient  {
 
     private final ControllerServer server;
     private String clientName;

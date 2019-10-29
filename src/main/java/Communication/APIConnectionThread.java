@@ -12,24 +12,27 @@ public class APIConnectionThread extends AbstractTimerClient {
     private final String HOSTNAME = "localhost";
     private final int PORT = 6970;
 
+    private Socket socket;
+    private OutputStream os;
+    private OutputStreamWriter osw;
+
     public APIConnectionThread(APIServer server, Socket socket)    {
         super(socket);
         this.valueStorageBox = ValueStorageBox.getStorageBox();
+        try {
+            this.os = socket.getOutputStream(); //Create output stream
+            this.osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void run() {
-
-        try(Socket socket = new Socket(HOSTNAME, PORT);) {
-
-            OutputStream os = socket.getOutputStream(); //Create output stream
-            OutputStreamWriter osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-
-            System.out.println("Press Enter to send message. Type exit to exit the program");
-            while(true) {
-                osw.write(valueStorageBox.getAllDataAsJsonArray().toString());
-                osw.flush();
-            }
+        try {
+            osw.write(valueStorageBox.getAllDataAsJsonArray().toString());
+            osw.flush();
         }
         catch(IOException e) {
             e.printStackTrace();

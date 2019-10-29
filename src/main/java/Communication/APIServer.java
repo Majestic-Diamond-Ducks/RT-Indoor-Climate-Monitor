@@ -24,7 +24,7 @@ public class APIServer extends AbstractServer{
             while(true) {
                 Socket socket = getServerSocket().accept();
 
-                //TODO rework this so the API Thread also sends a disconnect signal whent he api disconnects
+                //TODO rework this so the API Thread also sends a disconnect signal when the api disconnects
                 if(apiConnectionThread != null) { //Reset timer and timer task if the api-reconnects
                     apiTimer.cancel();
                     apiTimer.purge();

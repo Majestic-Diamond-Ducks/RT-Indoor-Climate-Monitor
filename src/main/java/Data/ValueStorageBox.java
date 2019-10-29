@@ -1,6 +1,7 @@
 package Data;
 
 import Enums.ValueTableIdentifier;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -71,6 +72,48 @@ public class ValueStorageBox {
 
         this.available = true;
         notifyAll();
+    }
+
+    public synchronized JSONArray getAllDataAsJsonArray() {
+
+        while(!this.available)    {
+            try {
+                wait();
+            }
+            catch(InterruptedException e)   {
+            }
+        }
+        this.available = false;
+
+        JSONArray jArray = new JSONArray();
+
+        clientsValuesMap.forEach((sensor, sensorValues) -> {
+            JSONObject outerJson = new JSONObject();
+            JSONObject innerJson = new JSONObject();
+
+            outerJson.put("NAME", sensor);
+
+            for(ValueTableIdentifier v : ValueTableIdentifier.values()) {
+                if(innerJson == null)   {
+                    innerJson = new JSONObject();
+                }
+                innerJson.put("CUR", sensorValues.getLastValue(v));
+                innerJson.put("MIN", sensorValues.getMinValue(v));
+                innerJson.put("MAX", sensorValues.getMaxValue(v));
+                innerJson.put("AVG", sensorValues.getAvgValue(v));
+                innerJson.put("LLM", sensorValues.getValueLowerLimit(v));
+                innerJson.put("HLM", sensorValues.getValueUpperLimit(v));
+
+                outerJson.put(v.toString(), innerJson);
+                innerJson = null;
+            }
+            jArray.put(outerJson);
+        });
+
+        this.available = true;
+        notifyAll();
+
+        return jArray;
     }
 
     /*

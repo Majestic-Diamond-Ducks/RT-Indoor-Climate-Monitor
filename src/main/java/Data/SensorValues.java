@@ -2,6 +2,8 @@ package Data;
 
 import Enums.ValueTableIdentifier;
 
+import java.util.Arrays;
+
 public class SensorValues {
 
     /*
@@ -34,6 +36,7 @@ public class SensorValues {
     public SensorValues() {
         this.valueTable = new float[5*TABLE_ROW_OFFSET];
         this.responseNumber = 0;
+        Arrays.fill(valueTable, Float.MIN_VALUE);
     }
 
     public void incrementResponseNumber()   {

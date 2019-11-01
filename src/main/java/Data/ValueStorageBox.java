@@ -1,6 +1,7 @@
 package Data;
 
 import Enums.ValueTableIdentifier;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -18,7 +19,7 @@ public class ValueStorageBox {
         this.available = true;
     }
 
-    public static ValueStorageBox getStorageBox()    {
+    public static synchronized ValueStorageBox getStorageBox()    {
         if(null == valueStorageBox) {
             valueStorageBox = new ValueStorageBox();
         }
@@ -73,6 +74,48 @@ public class ValueStorageBox {
         notifyAll();
     }
 
+    public synchronized JSONArray getAllDataAsJsonArray() {
+
+        while(!this.available)    {
+            try {
+                wait();
+            }
+            catch(InterruptedException e)   {
+            }
+        }
+        this.available = false;
+
+        JSONArray jArray = new JSONArray();
+
+        clientsValuesMap.forEach((sensor, sensorValues) -> {
+            JSONObject outerJson = new JSONObject();
+            JSONObject innerJson = new JSONObject();
+
+            outerJson.put("NAME", sensor);
+
+            for(ValueTableIdentifier v : ValueTableIdentifier.values()) {
+                if(innerJson == null)   {
+                    innerJson = new JSONObject();
+                }
+                innerJson.put("CUR", sensorValues.getLastValue(v));
+                innerJson.put("MIN", sensorValues.getMinValue(v));
+                innerJson.put("MAX", sensorValues.getMaxValue(v));
+                innerJson.put("AVG", sensorValues.getAvgValue(v));
+                innerJson.put("LLM", sensorValues.getValueLowerLimit(v));
+                innerJson.put("HLM", sensorValues.getValueUpperLimit(v));
+
+                outerJson.put(v.toString(), innerJson);
+                innerJson = null;
+            }
+            jArray.put(outerJson);
+        });
+
+        this.available = true;
+        notifyAll();
+
+        return jArray;
+    }
+
     /*
         ######## DEBUG ########
         Prints the values for a given client. Use this mainly for debugging and ensuring values are correct.
@@ -97,7 +140,7 @@ public class ValueStorageBox {
         System.out.println("-=- " + clientName + " | " + IP + " -=-");
         System.out.println("Response number: " + clientsValuesMap.get(clientName).getResponseNumber()); //Possible move response number to the value table
         System.out.println("TEMP: \t" + formatValues(clientName, ValueTableIdentifier.TEMP));
-        System.out.println("HMDT: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
+        System.out.println("HUM: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
         System.out.println("LGHT: \t" + formatValues(clientName, ValueTableIdentifier.LIGHT));
         System.out.println("CO2: \t" + formatValues(clientName, ValueTableIdentifier.CO2));
         System.out.println("DUST: \t" + formatValues(clientName, ValueTableIdentifier.DUST));
@@ -108,9 +151,9 @@ public class ValueStorageBox {
     }
 
     private String formatValues(String clientName, ValueTableIdentifier v)    { //Formats float values for print only
-        return String.format("%.02f", clientsValuesMap.get(clientName).getLast(v)) +
-                "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMin(v)) +
-                "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMax(v)) +
-                "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvg(v));
+        return String.format("%.02f", clientsValuesMap.get(clientName).getLastValue(v)) +
+                "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMinValue(v)) +
+                "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMaxValue(v)) +
+                "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvgValue(v));
     }
 }

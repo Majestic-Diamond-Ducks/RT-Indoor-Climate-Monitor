@@ -5,39 +5,28 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SensorServer {
+public class SensorServer extends AbstractServer{
 
-    private ServerSocket serverSocket;
     private final Map<String, SensorConnectionThread> connectedSensors; //Map of client IPs and their sensor threads
 
     public SensorServer(int port) throws IOException {
+        super(port);
         connectedSensors = new HashMap<>();
-        try {
-            //Create server socket
-            serverSocket = new ServerSocket(port);
-        }
-        catch(IOException e) {
-            System.err.println("Error creating server socket\n" + e.getMessage());
-        }
     }
 
+    @Override
     public void startServer()  {
-        System.out.println("Server started");
-
+        super.startServer();
         try {
             while(true) { //Keep this running (almost) forever
-                Socket newClient = serverSocket.accept();
+                Socket socket = getServerSocket().accept();
 
-                //Create a new thread when a new client is accepted
-                SensorConnectionThread sensorClientThread = new SensorConnectionThread(this, newClient);
-                System.out.println("New client created");
-
-                //Start client thread
+                //Create and start a new thread when a new client is accepted
+                SensorConnectionThread sensorClientThread = new SensorConnectionThread(this, socket);
                 sensorClientThread.start();
-                System.out.println("New client started");
 
                 //Put client in table containing all clients
-                connectedSensors.put(sensorClientThread.getClientIP(), sensorClientThread);
+                connectedSensors.put(sensorClientThread.getIP(), sensorClientThread);
                 System.out.println("New client put in table");
             }
         }
@@ -46,6 +35,7 @@ public class SensorServer {
         }
     }
 
+    @Override
     //Remove client from table
     public void disconnectClient(String clientIP) {
         connectedSensors.remove(clientIP);

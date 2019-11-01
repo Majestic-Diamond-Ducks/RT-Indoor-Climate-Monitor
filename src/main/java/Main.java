@@ -5,6 +5,15 @@ import Communication.SensorServer;
 import java.io.IOException;
 
 public class Main {
+    // LIST OF PROJECT TODOS //
+
+    //TODO implement interface to server classes (possibly abstract?)
+    //TODO add server as listeners in clients using interface
+    //TODO add overarching timer for client thread timeout/removal
+    //TODO write controller client code
+    //TODO change mutex to use read/write semaphores instead
+
+    // LIST OF PROJECT TODOS //
 
     public static void main(String[] args) {
 

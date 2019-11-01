@@ -4,15 +4,13 @@ import Data.ValueStorageBox;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 
 public class APIConnectionThread extends AbstractTimerClient {
 
     private ValueStorageBox valueStorageBox;
-    private final String HOSTNAME = "localhost";
-    private final int PORT = 6970;
 
-    private Socket socket;
     private OutputStream os;
     private OutputStreamWriter osw;
 
@@ -33,6 +31,9 @@ public class APIConnectionThread extends AbstractTimerClient {
         try {
             osw.write(valueStorageBox.getAllDataAsJsonArray().toString());
             osw.flush();
+        }
+        catch(SocketException e)  {
+            //TODO write call to close thread in API Server when socket or IO exception occurs
         }
         catch(IOException e) {
             e.printStackTrace();

@@ -7,10 +7,7 @@ import java.io.IOException;
 public class Main {
     // LIST OF PROJECT TODOS //
 
-    //TODO implement interface to server classes (possibly abstract?)
-    //TODO add check for no measured value from sensor (-1000)
-    //TODO add server as listeners in clients using interface
-    //TODO add overarching timer for client thread timeout/removal
+    //TODO rework average calculation
     //TODO write controller client code
     //TODO change mutex to use read/write semaphores instead
 

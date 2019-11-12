@@ -10,8 +10,8 @@ import java.util.Timer;
 
 public class ControllerServer extends AbstractServer implements ClientConnectionListener {
 
-    private final long CONTROLLER_UPDATES_PER_SECOND = 10;
-    private final long CONTROLLER_STARTUP_DELAY = 30; //in seconds
+    private static final long CONTROLLER_UPDATES_PER_SECOND = 10;
+    private static final long CONTROLLER_STARTUP_DELAY = 30; //in seconds
 
     private final Map<String, ControllerConnectionThread> connectedControllers;
 

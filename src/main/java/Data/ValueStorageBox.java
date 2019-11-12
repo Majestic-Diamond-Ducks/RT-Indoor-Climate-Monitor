@@ -32,6 +32,7 @@ public class ValueStorageBox {
                 wait();
             }
             catch(InterruptedException e)   {
+                Thread.currentThread().interrupt();
             }
         }
         this.available = false;
@@ -59,6 +60,7 @@ public class ValueStorageBox {
                 wait();
             }
             catch(InterruptedException e)   {
+                Thread.currentThread().interrupt();
             }
         }
         this.available = false;
@@ -81,6 +83,7 @@ public class ValueStorageBox {
                 wait();
             }
             catch(InterruptedException e)   {
+                Thread.currentThread().interrupt();
             }
         }
         this.available = false;
@@ -119,9 +122,8 @@ public class ValueStorageBox {
     /*
         ######## DEBUG ########
         Prints the values for a given client. Use this mainly for debugging and ensuring values are correct.
-        //TODO Disable or remove this when we have a web client up and running
      */
-    public synchronized void printSensorValueDebugMessage(String clientName, String IP)    {
+    /*public synchronized void printSensorValueDebugMessage(String clientName, String IP)    {
 
         if(!clientsValuesMap.containsKey(clientName))    {
             return; //Check and break if map does not contain requested client
@@ -155,5 +157,5 @@ public class ValueStorageBox {
                 "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMinValue(v)) +
                 "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMaxValue(v)) +
                 "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvgValue(v));
-    }
+    }*/
 }

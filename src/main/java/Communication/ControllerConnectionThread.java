@@ -30,14 +30,14 @@ public class ControllerConnectionThread extends AbstractTimerClient implements S
     }
 
     @Override
-    public void notifyConnect() {
+    public void doConnect() {
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onConnect();
         }
     }
 
     @Override
-    public void notifyDisconnect() {
+    public void doDisconnect() {
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onDisconnect(this.getIP());
         }

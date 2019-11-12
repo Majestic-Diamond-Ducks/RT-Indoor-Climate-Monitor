@@ -36,18 +36,19 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
     }
 
     public void initialize()    {
-        notifyConnect();
+        doConnect();
     }
 
     @Override
     public void run() {
         try {
             osw.write(valueStorageBox.getAllDataAsJsonArray().toString(4));
+            osw.write("\n");
             osw.flush();
         }
         catch(SocketException e)  {
             e.getMessage();
-            notifyDisconnect();
+            doDisconnect();
         }
         catch(IOException e) {
             e.getMessage();
@@ -56,14 +57,14 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
 
 
     @Override
-    public void notifyConnect() {
+    public void doConnect() {
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onConnect();
         }
     }
 
     @Override
-    public void notifyDisconnect() {
+    public void doDisconnect() {
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onDisconnect("");
         }

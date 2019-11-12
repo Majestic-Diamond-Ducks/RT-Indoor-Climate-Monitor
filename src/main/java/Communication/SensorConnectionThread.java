@@ -50,14 +50,14 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
         }
         System.out.println("\u23F9 Sensor thread stopped");
         //Disconnect thread
-        notifyDisconnect();
+        doDisconnect();
     }
 
     private void handleSensorResponse(JSONObject json)   { //Handles the values from the client sent json document
 
         if(this.clientName == null) { //Find a more elegant way to update client name in hashmap, preferably read it in SensorServer
             setClientName(json.getString("N"));
-            notifyConnect(); //Notify that connection has been established
+            doConnect(); //Notify that connection has been established
         }
 
         valueStorageBox.updateValues(this.clientName, json);
@@ -71,14 +71,15 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
     }
 
     @Override
-    public void notifyConnect() {
+    public void doConnect() {
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onConnect();
         }
     }
 
     @Override
-    public void notifyDisconnect() {
+    public void doDisconnect() {
+        valueStorageBox.removeClient(this.clientName);
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onDisconnect(this.getIP());
         }

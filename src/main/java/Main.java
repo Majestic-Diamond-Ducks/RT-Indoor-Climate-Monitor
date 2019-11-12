@@ -9,6 +9,7 @@ public class Main {
 
     //TODO rework average calculation
     //TODO write controller client code
+    //TODO Kill redundant threads
     //TODO change mutex to use read/write semaphores instead
 
     // LIST OF PROJECT TODOS //

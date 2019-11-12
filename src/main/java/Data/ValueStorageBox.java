@@ -27,7 +27,13 @@ public class ValueStorageBox {
     }
 
     public synchronized void addClient(String clientName) {
-        while(!this.available)    {
+        if(clientsValuesMap.containsKey(clientName))    { //Check if client already exist in table
+
+            removeClient(clientName);
+            System.out.println("\u267B Old client detected. Replacing old value table");
+        }
+
+        while(!this.available)    { //Check if available
             try {
                 wait();
             }
@@ -35,15 +41,28 @@ public class ValueStorageBox {
                 Thread.currentThread().interrupt();
             }
         }
-        this.available = false;
+        this.available = false; //Acquire mutex lock
 
-        if(clientsValuesMap.containsKey(clientName))    { //Check if client already exist in table
-
-            clientsValuesMap.remove(clientName); //remove old table if that is the case
-            System.out.println("\u267B Old client detected. Replacing old value table");
-        }
         clientsValuesMap.put(clientName, new SensorValues());
         System.out.println("\uD83D\uDCDD Client value table created");
+
+        this.available = true;
+        notifyAll();
+    }
+
+    public synchronized void removeClient(String clientName) {
+        while(!this.available)    { //Check if available
+            try {
+                wait();
+            }
+            catch(InterruptedException e)   {
+                Thread.currentThread().interrupt();
+            }
+        }
+        this.available = false; //Acquire mutex lock
+
+        clientsValuesMap.remove(clientName); //remove old table if that is the case
+        System.out.println("\uD83E\uDDF9 Client value table removed");
 
         this.available = true;
         notifyAll();
@@ -55,7 +74,7 @@ public class ValueStorageBox {
             addClient(clientName);
         }
 
-        while(!this.available)    {
+        while(!this.available)    { //Check if available
             try {
                 wait();
             }
@@ -63,7 +82,7 @@ public class ValueStorageBox {
                 Thread.currentThread().interrupt();
             }
         }
-        this.available = false;
+        this.available = false; //Acquire mutex lock
 
         clientsValuesMap.get(clientName).incrementResponseNumber();
         clientsValuesMap.get(clientName).putValue(json.getFloat("T"), ValueTableIdentifier.TEMP);
@@ -78,7 +97,7 @@ public class ValueStorageBox {
 
     public synchronized JSONArray getAllDataAsJsonArray() {
 
-        while(!this.available)    {
+        while(!this.available)    { //Check if available
             try {
                 wait();
             }
@@ -86,7 +105,7 @@ public class ValueStorageBox {
                 Thread.currentThread().interrupt();
             }
         }
-        this.available = false;
+        this.available = false; //Acquire mutex lock
 
         JSONArray jArray = new JSONArray();
 

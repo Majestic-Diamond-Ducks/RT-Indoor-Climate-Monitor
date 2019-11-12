@@ -1,11 +1,13 @@
 package Communication;
 
+import Interfaces.ClientConnectionListener;
+
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SensorServer extends AbstractServer{
+public class SensorServer extends AbstractServer implements ClientConnectionListener {
 
     private final Map<String, SensorConnectionThread> connectedSensors; //Map of client IPs and their sensor threads
 
@@ -27,18 +29,22 @@ public class SensorServer extends AbstractServer{
 
                 //Put client in table containing all clients
                 connectedSensors.put(sensorClientThread.getIP(), sensorClientThread);
-                System.out.println("New client put in table");
+                System.out.println("\u2714 New client put in table");
             }
         }
         catch(IOException e) {
-            System.err.println("Error accepting socket\n" + e.getMessage());
+            System.err.println("\u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
         }
     }
 
     @Override
-    //Remove client from table
-    public void disconnectClient(String clientIP) {
+    public void onConnect() {
+        System.out.println("\uD83D\uDD17 New sensor client connected");
+    }
+
+    @Override
+    public void onDisconnect(String clientIP) {
         connectedSensors.remove(clientIP);
-        System.out.println("Client disconnected");
+        System.out.println("\uD83D\uDD0C Sensor client disconnected");
     }
 }

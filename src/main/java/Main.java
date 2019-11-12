@@ -8,6 +8,7 @@ public class Main {
     // LIST OF PROJECT TODOS //
 
     //TODO implement interface to server classes (possibly abstract?)
+    //TODO add check for no measured value from sensor (-1000)
     //TODO add server as listeners in clients using interface
     //TODO add overarching timer for client thread timeout/removal
     //TODO write controller client code
@@ -29,7 +30,6 @@ public class Main {
             try {
                 sensorServer = new SensorServer(SENSOR_PORT);
                 sensorServer.startServer();
-                System.out.println("Sensor server started");
             }
             catch(IOException e) {
                 e.printStackTrace();
@@ -44,7 +44,6 @@ public class Main {
             try {
                 controllerServer = new ControllerServer(CONTROLLER_PORT);
                 controllerServer.startServer();
-                System.out.println("Sensor server started");
             }
             catch(IOException e) {
                 e.printStackTrace();
@@ -59,7 +58,6 @@ public class Main {
             try {
                 apiServer = new APIServer(API_PORT);
                 apiServer.startServer();
-                System.out.println("API server started");
             }
             catch(Exception e) {
                 e.printStackTrace();

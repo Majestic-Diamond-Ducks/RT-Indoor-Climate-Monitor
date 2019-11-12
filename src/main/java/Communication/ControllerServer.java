@@ -1,12 +1,14 @@
 package Communication;
 
+import Interfaces.ClientConnectionListener;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 
-public class ControllerServer extends AbstractServer{
+public class ControllerServer extends AbstractServer implements ClientConnectionListener {
 
     private final long CONTROLLER_UPDATES_PER_SECOND = 10;
     private final long CONTROLLER_STARTUP_DELAY = 30; //in seconds
@@ -31,17 +33,22 @@ public class ControllerServer extends AbstractServer{
                 controllerUpdateTimer.scheduleAtFixedRate(controllerConnectionThread, CONTROLLER_STARTUP_DELAY*1000, 1000/CONTROLLER_UPDATES_PER_SECOND);
 
                 connectedControllers.put(controllerConnectionThread.getIP(), controllerConnectionThread);
+                System.out.println("\u2714 New client put in table");
             }
         }
         catch(IOException e) {
-            System.err.println("Error accepting socket\n" + e.getMessage());
+            System.err.println("\u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
         }
     }
 
     @Override
-    //Remove client from table
-    public void disconnectClient(String clientIP) {
+    public void onConnect() {
+        System.out.println("\uD83D\uDD17 New controller client connected");
+    }
+
+    @Override
+    public void onDisconnect(String clientIP) {
         connectedControllers.remove(clientIP);
-        System.out.println("Client disconnected");
+        System.out.println("\uD83D\uDD0C Controller client disconnected");
     }
 }

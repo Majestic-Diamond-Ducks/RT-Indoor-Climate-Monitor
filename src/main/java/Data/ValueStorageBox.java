@@ -39,10 +39,10 @@ public class ValueStorageBox {
         if(clientsValuesMap.containsKey(clientName))    { //Check if client already exist in table
 
             clientsValuesMap.remove(clientName); //remove old table if that is the case
-            System.out.println("Old client detected. Removing old value table");
+            System.out.println("\u267B Old client detected. Replacing old value table");
         }
         clientsValuesMap.put(clientName, new SensorValues());
-        System.out.println("Client value table created");
+        System.out.println("\uD83D\uDCDD Client value table created");
 
         this.available = true;
         notifyAll();

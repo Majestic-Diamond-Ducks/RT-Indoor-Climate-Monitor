@@ -1,26 +1,33 @@
 package Communication;
 
 import Data.ValueStorageBox;
+import Interfaces.ClientConnectionListener;
+import Interfaces.ServerNotifier;
 import org.json.JSONObject;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SensorConnectionThread extends AbstractClient{
+public class SensorConnectionThread extends AbstractClient implements ServerNotifier {
 
-    private final SensorServer server;
     private String clientName; //Client name
 
     private ValueStorageBox valueStorageBox;
 
+    private List<ClientConnectionListener> connectionListeners;
+
     public SensorConnectionThread(SensorServer server, Socket clientSocket) {
         super(clientSocket);
-        this.server = server;
         this.valueStorageBox = ValueStorageBox.getStorageBox();
+
+        this.connectionListeners = new ArrayList<>();
+        addListener(server);
     }
 
     @Override
     public void run()   {
-        System.out.println("Sensor thread started");
+        System.out.println("\u25B6 Sensor thread started");
         try (BufferedReader bReader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));){
 
             StringBuilder sb = new StringBuilder();
@@ -39,16 +46,18 @@ public class SensorConnectionThread extends AbstractClient{
             this.getSocket().close(); //Close socket when connection ends
 
         } catch (IOException e) {
-            System.out.println("Network error: " + e.getMessage());
+            System.err.println("\u274C Network error in " + getClass().getSimpleName() + ": " + e.getMessage());
         }
+        System.out.println("\u23F9 Sensor thread stopped");
         //Disconnect thread
-        disconnect();
+        notifyDisconnect();
     }
 
     private void handleSensorResponse(JSONObject json)   { //Handles the values from the client sent json document
 
         if(this.clientName == null) { //Find a more elegant way to update client name in hashmap, preferably read it in SensorServer
             setClientName(json.getString("N"));
+            notifyConnect(); //Notify that connection has been established
         }
 
         valueStorageBox.updateValues(this.clientName, json);
@@ -61,7 +70,29 @@ public class SensorConnectionThread extends AbstractClient{
         this.valueStorageBox.addClient(clientName);
     }
 
-    private void disconnect()   {
-        server.disconnectClient(this.getIP());
+    @Override
+    public void notifyConnect() {
+        for(ClientConnectionListener ccl : this.connectionListeners)    {
+            ccl.onConnect();
+        }
+    }
+
+    @Override
+    public void notifyDisconnect() {
+        for(ClientConnectionListener ccl : this.connectionListeners)    {
+            ccl.onDisconnect(this.getIP());
+        }
+    }
+
+    @Override
+    public void addListener(ClientConnectionListener clientConnectionListener) {
+        if(!connectionListeners.contains(clientConnectionListener)) {
+            this.connectionListeners.add(clientConnectionListener);
+        }
+    }
+
+    @Override
+    public void removeListener(ClientConnectionListener clientConnectionListener) {
+        connectionListeners.remove(clientConnectionListener);
     }
 }

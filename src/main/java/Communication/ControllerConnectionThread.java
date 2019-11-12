@@ -10,7 +10,6 @@ import java.util.List;
 
 public class ControllerConnectionThread extends AbstractTimerClient implements ServerNotifier {
 
-    private final ControllerServer server;
     private String clientName;
 
     private ValueStorageBox valueStorageBox;
@@ -19,7 +18,6 @@ public class ControllerConnectionThread extends AbstractTimerClient implements S
 
     public ControllerConnectionThread(ControllerServer server, Socket clientSocket) {
         super(clientSocket);
-        this.server = server;
         this.valueStorageBox = ValueStorageBox.getStorageBox();
 
         this.connectionListeners = new ArrayList<>();

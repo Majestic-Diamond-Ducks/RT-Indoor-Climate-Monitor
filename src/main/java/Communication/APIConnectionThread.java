@@ -15,7 +15,6 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
 
     private ValueStorageBox valueStorageBox;
 
-    private OutputStream os;
     private OutputStreamWriter osw;
 
     private List<ClientConnectionListener> connectionListeners;
@@ -28,7 +27,7 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
         addListener(server);
 
         try {
-            this.os = socket.getOutputStream(); //Create output stream
+            OutputStream os = socket.getOutputStream(); //Create output stream
             this.osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
         }
         catch(IOException e) {
@@ -43,7 +42,7 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
     @Override
     public void run() {
         try {
-            osw.write(valueStorageBox.getAllDataAsJsonArray().toString());
+            osw.write(valueStorageBox.getAllDataAsJsonArray().toString(4));
             osw.flush();
         }
         catch(SocketException e)  {

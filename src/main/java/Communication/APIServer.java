@@ -8,8 +8,8 @@ import java.util.Timer;
 
 public class APIServer extends AbstractServer implements ClientConnectionListener{
 
-    private final long API_UPDATES_PER_SECOND = 10;
-    private final long API_STARTUP_DELAY = 5; //Startup delay in seconds
+    private static final long API_UPDATES_PER_SECOND = 2;
+    private static final long API_STARTUP_DELAY = 3; //Startup delay in seconds
 
     private APIConnectionThread apiConnectionThread;
     private APIConnectionThread apiTryThread;

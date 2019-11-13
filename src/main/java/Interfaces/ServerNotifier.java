@@ -2,9 +2,9 @@ package Interfaces;
 
 public interface ServerNotifier {
 
-    public void notifyConnect();
+    public void doConnect();
 
-    public void notifyDisconnect();
+    public void doDisconnect();
 
     public void addListener(ClientConnectionListener ccl);
 

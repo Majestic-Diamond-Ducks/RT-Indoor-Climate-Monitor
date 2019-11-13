@@ -31,32 +31,49 @@ public class SensorValues {
     private float[] valueTable;
     private static final int TABLE_ROW_OFFSET = 6;
 
-    private long responseNumber;
+    /*Array of the number of measurement of each value type, used for calculating wighted rolling average
+            tmp hum lgt co2 dst
+            0   1   2   3   4
+     */
+    private int[] avgCount;
+    //average limit for weighted rolling average
+    private static final int AVERAGE_MEASUREMENT_LIMIT = 120;
 
     public SensorValues() {
         this.valueTable = new float[5*TABLE_ROW_OFFSET];
-        this.responseNumber = 0;
-        Arrays.fill(valueTable, Float.MIN_VALUE);
-    }
-
-    public void incrementResponseNumber()   {
-        this.responseNumber++;
+        this.avgCount = new int[5];
+        Arrays.fill(valueTable, -1000f); //start array with impossibly low number
+        Arrays.fill(avgCount, 0);
     }
 
     //Response number used for avg, calculation
     public void putValue(float value, ValueTableIdentifier v)   {
 
-        int offset = v.getValue()*TABLE_ROW_OFFSET;
-        this.valueTable[offset] = value;
+        if(value > -100) { //Discard impossibly low measurement. Lower than -100 in this case
 
-        if(this.valueTable[1 + offset] > value || this.responseNumber == 1) {
-            this.valueTable[1 + offset] = value;
-        }
+            int offset = v.getValue() * TABLE_ROW_OFFSET;
+            this.valueTable[offset] = value;
+            incrementAvgCount(v);
 
-        if(this.valueTable[2 + offset] < value || this.responseNumber == 1) {
-            this.valueTable[2 + offset] = value;
+            if(this.valueTable[1 + offset] > value || getAvgCount(v) == 1) {
+                this.valueTable[1 + offset] = value;
+            }
+
+            if(this.valueTable[2 + offset] < value || getAvgCount(v) == 1) {
+                this.valueTable[2 + offset] = value;
+            }
+
+            float a;
+            if(getAvgCount(v) < AVERAGE_MEASUREMENT_LIMIT)  {
+                a = 2 / (1 + (float)getAvgCount(v));
+            }
+            else {
+                a = 2 / (1 + (float)AVERAGE_MEASUREMENT_LIMIT);
+            }
+
+            //Calculate rolling, weighted average
+            this.valueTable[3 + offset] = (value * a) + (this.valueTable[3 + offset] * (1 - a));
         }
-        this.valueTable[3 + offset] = this.valueTable[3 + offset] + ((value - this.valueTable[3 + offset])/this.responseNumber);
     }
 
     public void setValueLowerLimit(float newValue, ValueTableIdentifier v)    {
@@ -91,7 +108,11 @@ public class SensorValues {
         return this.valueTable[(v.getValue()*TABLE_ROW_OFFSET)+5];
     }
 
-    public long getResponseNumber() {
-        return this.responseNumber;
+    private void incrementAvgCount(ValueTableIdentifier v) {
+        avgCount[v.getValue()]++;
+    }
+
+    public int getAvgCount(ValueTableIdentifier v)    {
+        return this.avgCount[v.getValue()];
     }
 }

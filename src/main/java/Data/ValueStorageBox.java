@@ -84,7 +84,6 @@ public class ValueStorageBox {
         }
         this.available = false; //Acquire mutex lock
 
-        clientsValuesMap.get(clientName).incrementResponseNumber();
         clientsValuesMap.get(clientName).putValue(json.getFloat("T"), ValueTableIdentifier.TEMP);
         clientsValuesMap.get(clientName).putValue(json.getFloat("H"), ValueTableIdentifier.HUMIDITY);
         clientsValuesMap.get(clientName).putValue(json.getFloat("L"), ValueTableIdentifier.LIGHT);
@@ -141,8 +140,10 @@ public class ValueStorageBox {
     /*
         ######## DEBUG ########
         Prints the values for a given client. Use this mainly for debugging and ensuring values are correct.
-     */
-    /*public synchronized void printSensorValueDebugMessage(String clientName, String IP)    {
+
+  */
+
+    public synchronized void printSensorValueDebugMessage(String clientName, String IP)    {
 
         if(!clientsValuesMap.containsKey(clientName))    {
             return; //Check and break if map does not contain requested client
@@ -159,7 +160,6 @@ public class ValueStorageBox {
 
         System.out.println(" ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾");
         System.out.println("-=- " + clientName + " | " + IP + " -=-");
-        System.out.println("Response number: " + clientsValuesMap.get(clientName).getResponseNumber()); //Possible move response number to the value table
         System.out.println("TEMP: \t" + formatValues(clientName, ValueTableIdentifier.TEMP));
         System.out.println("HUM: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
         System.out.println("LGHT: \t" + formatValues(clientName, ValueTableIdentifier.LIGHT));
@@ -176,5 +176,5 @@ public class ValueStorageBox {
                 "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMinValue(v)) +
                 "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMaxValue(v)) +
                 "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvgValue(v));
-    }*/
+    }
 }

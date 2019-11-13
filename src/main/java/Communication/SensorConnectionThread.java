@@ -62,7 +62,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
 
         valueStorageBox.updateValues(this.clientName, json);
 
-        //valueStorageBox.printSensorValueDebugMessage(this.clientName, this.getIP()); //Prints the values. mainly for debug
+        valueStorageBox.printSensorValueDebugMessage(this.clientName, this.getIP()); //Prints the values. mainly for debug
     }
 
     private void setClientName(String clientName) {

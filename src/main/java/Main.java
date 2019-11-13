@@ -7,7 +7,6 @@ import java.io.IOException;
 public class Main {
     // LIST OF PROJECT TODOS //
 
-    //TODO rework average calculation
     //TODO write controller client code
     //TODO Kill redundant threads
     //TODO change mutex to use read/write semaphores instead

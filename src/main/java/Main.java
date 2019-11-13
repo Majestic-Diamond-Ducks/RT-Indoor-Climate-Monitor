@@ -8,7 +8,6 @@ public class Main {
     // LIST OF PROJECT TODOS //
 
     //TODO write controller client code
-    //TODO change mutex to use read/write semaphores instead
 
     // LIST OF PROJECT TODOS //
 

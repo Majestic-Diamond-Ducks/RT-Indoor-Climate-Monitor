@@ -3,6 +3,7 @@ package Communication;
 import Data.ValueStorageBox;
 import Interfaces.ClientConnectionListener;
 import Interfaces.ServerNotifier;
+import Logic.ReadWriteSemaphore;
 import org.json.JSONObject;
 import java.io.*;
 import java.net.*;
@@ -14,6 +15,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
     private String clientName; //Client name
 
     private ValueStorageBox valueStorageBox;
+    private ReadWriteSemaphore readWriteSemaphore;
 
     private List<ClientConnectionListener> connectionListeners;
 
@@ -24,6 +26,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
     public SensorConnectionThread(SensorServer server, Socket clientSocket) {
         super(clientSocket);
         this.valueStorageBox = ValueStorageBox.getStorageBox();
+        this.readWriteSemaphore = ReadWriteSemaphore.getReadWriteSemaphore();
 
         this.connectionListeners = new ArrayList<>();
         addListener(server);
@@ -74,9 +77,18 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
             doConnect(); //Notify that connection has been established
         }
         incrementResponseNumber();
-        valueStorageBox.updateValues(this.clientName, json);
 
-        valueStorageBox.printSensorValueDebugMessage(this.clientName, this.getIP()); //Prints the values. mainly for debug
+        try {
+            readWriteSemaphore.acquireWrite();
+        }
+        catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        valueStorageBox.updateValues(this.clientName, json);
+        //valueStorageBox.printSensorValueDebugMessage(this.clientName, this.getIP()); //Prints the values. mainly for debug
+
+        readWriteSemaphore.releaseWrite();
     }
 
     public void performTimeoutCheck()   {
@@ -99,7 +111,16 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
 
     private void setClientName(String clientName) {
         this.clientName = clientName;
+        try{
+            readWriteSemaphore.acquireWrite();
+        }
+        catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         this.valueStorageBox.addClient(clientName);
+
+        readWriteSemaphore.releaseWrite();
     }
 
     private void incrementResponseNumber()  {
@@ -119,7 +140,17 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
 
     @Override
     public void doDisconnect() {
+        try {
+            readWriteSemaphore.acquireWrite();
+        }
+        catch(InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
         valueStorageBox.removeClient(this.clientName);
+
+        readWriteSemaphore.releaseWrite();
+
         for(ClientConnectionListener ccl : this.connectionListeners)    {
             ccl.onDisconnect(this.getIP());
         }

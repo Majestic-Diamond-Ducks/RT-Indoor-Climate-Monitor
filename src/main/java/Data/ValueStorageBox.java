@@ -154,6 +154,7 @@ public class ValueStorageBox {
                 wait();
             }
             catch(InterruptedException e)   {
+                Thread.currentThread().interrupt();
             }
         }
         this.available = false;

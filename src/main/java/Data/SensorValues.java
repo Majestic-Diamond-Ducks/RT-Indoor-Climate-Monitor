@@ -112,7 +112,7 @@ public class SensorValues {
         avgCount[v.getValue()]++;
     }
 
-    public int getAvgCount(ValueTableIdentifier v)    {
+    private int getAvgCount(ValueTableIdentifier v)    {
         return this.avgCount[v.getValue()];
     }
 }

@@ -61,50 +61,36 @@ public class ValueStorageBox {
             outerJson.put("NAME", sensor);
 
             for(ValueTableIdentifier v : ValueTableIdentifier.values()) {
+                if(null == innerJson)   {
+                    innerJson = new JSONObject();
+                }
 
                 if(sensorValues.getLastValue(v) > -100) {
                     innerJson.put("Current", sensorValues.getLastValue(v));
-                }
-                else if(innerJson.has("Current"))   {
-                    innerJson.remove("Current");
                 }
 
                 if(sensorValues.getMinValue(v) > -100) {
                     innerJson.put("Min", sensorValues.getMinValue(v));
                 }
-                else if(innerJson.has("Min"))   {
-                    innerJson.remove("Min");
-                }
 
                 if(sensorValues.getMaxValue(v) > -100) {
                     innerJson.put("Max", sensorValues.getMaxValue(v));
-                }
-                else if(innerJson.has("Max"))   {
-                    innerJson.remove("Max");
                 }
 
                 if(sensorValues.getAvgValue(v) > -100) {
                     innerJson.put("Average", sensorValues.getAvgValue(v));
                 }
-                else if(innerJson.has("Average"))   {
-                    innerJson.remove("Average");
-                }
 
                 if(sensorValues.getValueLowerLimit(v) > -100) {
                     innerJson.put("Lower limit", sensorValues.getValueLowerLimit(v));
-                }
-                else if(innerJson.has("Lower limit"))   {
-                    innerJson.remove("Lower limit");
                 }
 
                 if(sensorValues.getValueUpperLimit(v) > -100) {
                     innerJson.put("Upper limit", sensorValues.getValueUpperLimit(v));
                 }
-                else if(innerJson.has("Upper limit"))   {
-                    innerJson.remove("Upper limit");
-                }
 
                 outerJson.put(v.toString(), innerJson);
+                innerJson = null;
             }
             jArray.put(outerJson);
         });

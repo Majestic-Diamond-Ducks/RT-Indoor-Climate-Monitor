@@ -59,7 +59,7 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
 
         try {
             osw.write(valueStorageBox.getAllDataAsJsonArray().toString(4));
-            osw.write("\n");
+            osw.write("\n\n");
             osw.flush();
         }
         catch(SocketException f)  {

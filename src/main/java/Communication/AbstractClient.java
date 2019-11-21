@@ -1,8 +1,11 @@
 package Communication;
 
 import java.net.Socket;
+import java.time.format.DateTimeFormatter;
 
 public abstract class AbstractClient extends Thread {
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final Socket clientSocket;
     private String IP;
@@ -21,5 +24,9 @@ public abstract class AbstractClient extends Thread {
 
     protected String getIP()    {
         return this.IP;
+    }
+
+    protected DateTimeFormatter getDateTimeFormat() {
+        return dateTimeFormatter;
     }
 }

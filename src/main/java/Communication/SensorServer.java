@@ -6,6 +6,7 @@ import Logic.TimeoutNotifier;
 
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -44,23 +45,23 @@ public class SensorServer extends AbstractServer implements ClientConnectionList
 
                 //Put client in table containing all clients
                 connectedSensors.put(sensorClientThread.getIP(), sensorClientThread);
-                System.out.println("\u2714 New client put in table");
+                System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u2714 New client put in table");
             }
         }
         catch(IOException e) {
-            System.err.println("\u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
         }
     }
 
     @Override
     public void onConnect() {
-        System.out.println("\uD83D\uDD17 New sensor client connected");
+        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 New sensor client connected");
     }
 
     @Override
     public void onDisconnect(String clientIP) {
         connectedSensors.remove(clientIP);
-        System.out.println("\uD83D\uDD0C Sensor client disconnected");
+        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD0C Sensor client disconnected");
     }
 
     @Override

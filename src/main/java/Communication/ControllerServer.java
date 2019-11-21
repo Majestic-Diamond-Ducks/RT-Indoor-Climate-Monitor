@@ -4,6 +4,7 @@ import Interfaces.ClientConnectionListener;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -33,22 +34,22 @@ public class ControllerServer extends AbstractServer implements ClientConnection
                 controllerUpdateTimer.scheduleAtFixedRate(controllerConnectionThread, CONTROLLER_STARTUP_DELAY*1000, 1000/CONTROLLER_UPDATES_PER_SECOND);
 
                 connectedControllers.put(controllerConnectionThread.getIP(), controllerConnectionThread);
-                System.out.println("\u2714 New client put in table");
+                System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u2714 New client put in table");
             }
         }
         catch(IOException e) {
-            System.err.println("\u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
         }
     }
 
     @Override
     public void onConnect() {
-        System.out.println("\uD83D\uDD17 New controller client connected");
+        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 New controller client connected");
     }
 
     @Override
     public void onDisconnect(String clientIP) {
         connectedControllers.remove(clientIP);
-        System.out.println("\uD83D\uDD0C Controller client disconnected");
+        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD0C Controller client disconnected");
     }
 }

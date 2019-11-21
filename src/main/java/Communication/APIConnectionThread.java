@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
             getSocket().setSoTimeout(60000);
         }
         catch(SocketException e) {
-            System.err.println("\u274C Network connection closed by timeout");
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u274C Network connection closed by timeout");
         }
         doConnect();
     }
@@ -59,7 +60,7 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
 
         try {
             osw.write(valueStorageBox.getAllDataAsJsonArray().toString(4));
-            osw.write("\n\n");
+            osw.write("\n");
             osw.flush();
         }
         catch(SocketException f)  {

@@ -4,10 +4,14 @@ import Enums.ValueTableIdentifier;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ValueStorageBox {
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private Map<String, SensorValues> clientsValuesMap; //Contains client name and values
     private static ValueStorageBox valueStorageBox;
@@ -27,16 +31,16 @@ public class ValueStorageBox {
         if(clientsValuesMap.containsKey(clientName))    { //Check if client already exist in table
 
             removeClient(clientName);
-            System.out.println("\u267B Old client detected. Replacing old value table");
+            System.out.println(LocalDateTime.now().format(dateTimeFormatter) + " \u267B Old client detected. Replacing old value table");
         }
 
         clientsValuesMap.put(clientName, new SensorValues());
-        System.out.println("\uD83D\uDCDD Client value table created");
+        System.out.println(LocalDateTime.now().format(dateTimeFormatter) + " \uD83D\uDCDD Client value table created");
     }
 
     public synchronized void removeClient(String clientName) {
         clientsValuesMap.remove(clientName); //remove old table if that is the case
-        System.out.println("\uD83E\uDDF9 Client value table removed");
+        System.out.println(LocalDateTime.now().format(dateTimeFormatter) + " \uD83E\uDDF9 Client value table removed");
     }
 
     public synchronized void updateValues(String clientName, JSONObject json) {

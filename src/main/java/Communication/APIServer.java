@@ -4,11 +4,12 @@ import Interfaces.ClientConnectionListener;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.Timer;
 
 public class APIServer extends AbstractServer implements ClientConnectionListener{
 
-    private static final long API_UPDATES_PER_SECOND = 5;
+    private static final long API_UPDATES_PER_SECOND = 2;
     private static final long API_STARTUP_DELAY = 2; //Startup delay in seconds
 
     private APIConnectionThread apiConnectionThread;
@@ -28,12 +29,12 @@ public class APIServer extends AbstractServer implements ClientConnectionListene
                 Socket socket = getServerSocket().accept();
 
                 apiTryThread = new APIConnectionThread(this, socket);
-                System.out.println("\uD83D\uDD01 Trying API connection thread");
+                System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD01 Trying API connection thread");
                 apiTryThread.initialize();
             }
         }
         catch(IOException e) {
-            System.err.println("\u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u274C Error accepting socket in " + getClass().getSimpleName() + "\n" + e.getMessage());
         }
     }
 
@@ -41,12 +42,12 @@ public class APIServer extends AbstractServer implements ClientConnectionListene
     public void onConnect() {
 
         if(apiConnectionThread != null) {
-            System.err.println("\u26A0 New API connection tried but an API connection already exist. Ignoring new API connection");
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u26A0 New API connection tried but an API connection already exist. Ignoring new API connection");
         }
         else {
             apiConnectionThread = apiTryThread;
             apiTimer.scheduleAtFixedRate(apiConnectionThread, API_STARTUP_DELAY*1000 , 1000/API_UPDATES_PER_SECOND);
-            System.out.println("\uD83D\uDD17 API connection started");
+            System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 API connection started");
         }
         apiTryThread = null; //reset api try thread
     }
@@ -58,6 +59,6 @@ public class APIServer extends AbstractServer implements ClientConnectionListene
         apiConnectionThread = null;
         apiTimer = new Timer();
 
-        System.out.println("\uD83D\uDD0C API Disconnected");
+        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD0C API Disconnected");
     }
 }

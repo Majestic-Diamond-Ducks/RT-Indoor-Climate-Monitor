@@ -1,9 +1,12 @@
 package Communication;
 
 import java.net.Socket;
+import java.time.format.DateTimeFormatter;
 import java.util.TimerTask;
 
 public abstract class AbstractTimerClient extends TimerTask {
+
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final Socket clientSocket;
     private String IP;
@@ -22,5 +25,9 @@ public abstract class AbstractTimerClient extends TimerTask {
 
     protected String getIP()    {
         return this.IP;
+    }
+
+    protected DateTimeFormatter getDateTimeFormat() {
+        return dateTimeFormatter;
     }
 }

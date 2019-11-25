@@ -55,6 +55,21 @@ public class ValueStorageBox {
         clientsValuesMap.get(clientName).putValue(json.getFloat("D"), ValueTableIdentifier.DUST);
     }
 
+    public synchronized void updateLimits(String clientName, JSONObject json) {
+        if(json.has("TempMin")) {
+            clientsValuesMap.get(clientName).setValueLowerLimit(json.getFloat("TempMin"), ValueTableIdentifier.TEMP);
+        }
+        if(json.has("TempMax")) {
+            clientsValuesMap.get(clientName).setValueUpperLimit(json.getFloat("TempMax"), ValueTableIdentifier.TEMP);
+        }
+        if(json.has("CO2Limit")) {
+            clientsValuesMap.get(clientName).setValueUpperLimit(json.getFloat("CO2Limit"), ValueTableIdentifier.CO2);
+        }
+        if(json.has("DustLimit")) {
+            clientsValuesMap.get(clientName).setValueUpperLimit(json.getFloat("DustLimit"), ValueTableIdentifier.DUST);
+        }
+    }
+
     public synchronized JSONArray getAllDataAsJsonArray() {
         JSONArray jArray = new JSONArray();
 

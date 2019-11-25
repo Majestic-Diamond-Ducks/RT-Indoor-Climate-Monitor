@@ -78,7 +78,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
         doDisconnect();
     }
 
-    private void handleSensorResponse(JSONObject json)   { //Handles the values from the client sent json document
+    private synchronized void handleSensorResponse(JSONObject json)   { //Handles the values from the client sent json document
 
         if(this.clientName == null) {
             setClientName(json.getString("N"));
@@ -99,7 +99,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
         readWriteSemaphore.releaseWrite();
     }
 
-    public void performTimeoutCheck()   {
+    public synchronized void performTimeoutCheck()   {
         if(lastMeasuredResponseNumber == responseNumber)    {
             timeouts++;
             if(timeouts == 4) {
@@ -117,7 +117,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
         }
     }
 
-    private void setClientName(String clientName) {
+    private synchronized void setClientName(String clientName) {
         this.clientName = clientName;
         try{
             readWriteSemaphore.acquireWrite();
@@ -147,7 +147,7 @@ public class SensorConnectionThread extends AbstractClient implements ServerNoti
     }
 
     @Override
-    public void doDisconnect() {
+    public synchronized void doDisconnect() {
         try {
             readWriteSemaphore.acquireWrite();
         }

@@ -1,4 +1,5 @@
-import Communication.APIServer;
+import Communication.APIIncomingServer;
+import Communication.APIOutgoingServer;
 import Communication.ControllerServer;
 import Communication.SensorServer;
 
@@ -15,7 +16,8 @@ public class Main {
 
         final int SENSOR_PORT = 6789;
         final int CONTROLLER_PORT = 6790;
-        final int API_PORT = 6969;
+        final int API_OUT_PORT = 6969;
+        final int API_IN_PORT = 6970;
 
         //
         // Start sensor server
@@ -46,13 +48,27 @@ public class Main {
         }).start();
 
         //
-        // Start controller server
+        // Start API outgoing server
         //
         new Thread(() -> {
-            APIServer apiServer;
+            APIOutgoingServer apiOutgoingServer;
             try {
-                apiServer = new APIServer(API_PORT);
-                apiServer.startServer();
+                apiOutgoingServer = new APIOutgoingServer(API_OUT_PORT);
+                apiOutgoingServer.startServer();
+            }
+            catch(Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+        //
+        // Start API outgoing server
+        //
+        new Thread(() -> {
+            APIIncomingServer apiIncomingServer;
+            try {
+                apiIncomingServer = new APIIncomingServer(API_IN_PORT);
+                apiIncomingServer.startServer();
             }
             catch(Exception e) {
                 e.printStackTrace();

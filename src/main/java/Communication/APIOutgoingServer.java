@@ -7,16 +7,16 @@ import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.Timer;
 
-public class APIServer extends AbstractServer implements ClientConnectionListener{
+public class APIOutgoingServer extends AbstractServer implements ClientConnectionListener{
 
     private static final long API_UPDATES_PER_SECOND = 2;
     private static final long API_STARTUP_DELAY = 2; //Startup delay in seconds
 
-    private APIConnectionThread apiConnectionThread;
-    private APIConnectionThread apiTryThread;
+    private APIOutgoingConnectionThread apiOutgoingConnectionThread;
+    private APIOutgoingConnectionThread apiTryThread;
     private Timer apiTimer;
 
-    public APIServer(int port)  {
+    public APIOutgoingServer(int port)  {
         super(port);
         apiTimer = new Timer();
     }
@@ -28,8 +28,8 @@ public class APIServer extends AbstractServer implements ClientConnectionListene
             while(true) {
                 Socket socket = getServerSocket().accept();
 
-                apiTryThread = new APIConnectionThread(this, socket);
-                System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD01 Trying API connection thread");
+                apiTryThread = new APIOutgoingConnectionThread(this, socket);
+                System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD01 Trying API outgoing thread");
                 apiTryThread.initialize();
             }
         }
@@ -41,13 +41,13 @@ public class APIServer extends AbstractServer implements ClientConnectionListene
     @Override
     public void onConnect() {
 
-        if(apiConnectionThread != null) {
-            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u26A0 New API connection tried but an API connection already exist. Ignoring new API connection");
+        if(apiOutgoingConnectionThread != null) {
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u26A0 New API outgoing connection tried but an API connection already exist. Ignoring new API connection");
         }
         else {
-            apiConnectionThread = apiTryThread;
-            apiTimer.scheduleAtFixedRate(apiConnectionThread, API_STARTUP_DELAY*1000 , 1000/API_UPDATES_PER_SECOND);
-            System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 API connection started");
+            apiOutgoingConnectionThread = apiTryThread;
+            apiTimer.scheduleAtFixedRate(apiOutgoingConnectionThread, API_STARTUP_DELAY*1000 , 1000/API_UPDATES_PER_SECOND);
+            System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 API outgoing connection started");
         }
         apiTryThread = null; //reset api try thread
     }
@@ -56,7 +56,7 @@ public class APIServer extends AbstractServer implements ClientConnectionListene
     public void onDisconnect(String string) {
         apiTimer.cancel();
         apiTimer.purge();
-        apiConnectionThread = null;
+        apiOutgoingConnectionThread = null;
         apiTimer = new Timer();
 
         System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD0C API Disconnected");

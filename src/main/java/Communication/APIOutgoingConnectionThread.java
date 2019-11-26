@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class APIConnectionThread extends AbstractTimerClient implements ServerNotifier {
+public class APIOutgoingConnectionThread extends AbstractTimerClient implements ServerNotifier {
 
     private ValueStorageBox valueStorageBox;
     private ReadWriteSemaphore readWriteSemaphore;
@@ -22,7 +22,7 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
 
     private List<ClientConnectionListener> connectionListeners;
 
-    public APIConnectionThread(APIServer server, Socket socket)    {
+    public APIOutgoingConnectionThread(APIOutgoingServer server, Socket socket)    {
         super(socket);
         this.valueStorageBox = ValueStorageBox.getStorageBox();
         this.readWriteSemaphore = ReadWriteSemaphore.getReadWriteSemaphore();
@@ -44,13 +44,13 @@ public class APIConnectionThread extends AbstractTimerClient implements ServerNo
             getSocket().setSoTimeout(60000);
         }
         catch(SocketException e) {
-            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u274C Network connection closed by timeout");
+            System.err.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u274C Error initializing outgoing API socket");
         }
         doConnect();
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         try{
             readWriteSemaphore.acquireRead();
         }

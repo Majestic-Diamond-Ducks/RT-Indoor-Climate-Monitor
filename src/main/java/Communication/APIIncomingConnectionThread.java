@@ -58,7 +58,6 @@ public class APIIncomingConnectionThread extends AbstractClient implements Serve
                     }
                     sb.setLength(0); //Reset String builder
                 }
-                System.out.println(sb.toString());
             }
             this.getSocket().close(); //Close socket when connection ends
 

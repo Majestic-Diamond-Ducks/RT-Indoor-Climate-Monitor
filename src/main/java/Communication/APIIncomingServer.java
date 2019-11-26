@@ -42,7 +42,6 @@ public class APIIncomingServer extends AbstractServer implements ClientConnectio
         else {
             apiIncomingConnectionThread = apiTryThread;
             apiIncomingConnectionThread.start();
-            System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 API incoming connection started");
         }
         apiTryThread = null;
     }

@@ -5,6 +5,7 @@ import Interfaces.ClientConnectionListener;
 import Interfaces.ServerNotifier;
 import Logic.ReadWriteSemaphore;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class APIIncomingConnectionThread extends AbstractClient implements Serve
 
     @Override
     public void run()   {
+        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \uD83D\uDD17 API incoming connection started");
         try (BufferedReader bReader = new BufferedReader(new InputStreamReader(this.getSocket().getInputStream()));){
 
             StringBuilder sb = new StringBuilder();
@@ -46,10 +48,17 @@ public class APIIncomingConnectionThread extends AbstractClient implements Serve
                     sb.append(msgIn); //Add characters to string builder
                 }
                 else    { //If line is empty, create and print json
+                    System.out.println(sb.toString());
+                    try {
                         JSONArray json = new JSONArray(sb.toString());
                         handleIncomingAPIDocument(json); //Handle json document
+                    }
+                    catch(JSONException e)    {
+                        System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u26A0 Malformed JSON Array from API incoming");
+                    }
                     sb.setLength(0); //Reset String builder
                 }
+                System.out.println(sb.toString());
             }
             this.getSocket().close(); //Close socket when connection ends
 
@@ -79,9 +88,15 @@ public class APIIncomingConnectionThread extends AbstractClient implements Serve
     private synchronized void handleIncomingAPIDocument(JSONArray jsonArray)    {
         try {
             readWriteSemaphore.acquireWrite();
+            try {
                 for(int i = 0; i < jsonArray.length(); i++) {
-                     valueStorageBox.updateLimits(jsonArray.getJSONObject(i).getString("N"), jsonArray.getJSONObject(i));
+                    valueStorageBox.updateLimits(jsonArray.getJSONObject(i).getString("N"), jsonArray.getJSONObject(i));
                 }
+            }
+            catch(JSONException e)  {
+                System.out.println(LocalDateTime.now().format(getDateTimeFormat()) + " \u26A0 Malformed JSON object inside API incoming array");
+
+            }
         }
         catch(InterruptedException e) {
             Thread.currentThread().interrupt();

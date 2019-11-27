@@ -115,34 +115,4 @@ public class ValueStorageBox {
         });
         return jArray;
     }
-
-    /*
-        ######## DEBUG ########
-        Prints the values for a given client. Use this mainly for debugging and ensuring values are correct.
-
-  */
-
-    /*public synchronized void printSensorValueDebugMessage(String clientName, String IP)    {
-
-        if(!clientsValuesMap.containsKey(clientName))    {
-            return; //Check and break if map does not contain requested client
-        }
-
-        System.out.println(" ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾ ‾");
-        System.out.println("-=- " + clientName + " | " + IP + " -=-");
-        System.out.println("TEMP: \t" + formatValues(clientName, ValueTableIdentifier.TEMP));
-        System.out.println("HUM: \t" + formatValues(clientName, ValueTableIdentifier.HUMIDITY));
-        System.out.println("LGHT: \t" + formatValues(clientName, ValueTableIdentifier.LIGHT));
-        System.out.println("CO2: \t" + formatValues(clientName, ValueTableIdentifier.CO2));
-        System.out.println("DUST: \t" + formatValues(clientName, ValueTableIdentifier.DUST));
-        System.out.println("_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _");
-
-    }
-
-    private String formatValues(String clientName, ValueTableIdentifier v)    { //Formats float values for print only
-        return String.format("%.02f", clientsValuesMap.get(clientName).getLastValue(v)) +
-                "\tMin: " + String.format("%.02f", clientsValuesMap.get(clientName).getMinValue(v)) +
-                "\tMax: " + String.format("%.02f", clientsValuesMap.get(clientName).getMaxValue(v)) +
-                "\tAvg: " + String.format("%.02f", clientsValuesMap.get(clientName).getAvgValue(v));
-    }*/
 }

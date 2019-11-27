@@ -6,11 +6,6 @@ import Communication.SensorServer;
 import java.io.IOException;
 
 public class Main {
-    // LIST OF PROJECT TODOS //
-
-    //TODO write controller client code
-
-    // LIST OF PROJECT TODOS //
 
     public static void main(String[] args) {
 

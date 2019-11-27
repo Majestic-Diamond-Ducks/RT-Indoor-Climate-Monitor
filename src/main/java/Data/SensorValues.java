@@ -16,22 +16,23 @@ public class SensorValues {
     lLm => Lower limit for trigger (decided by controls on the web/mobile client)
     hLm => Higher limit for trigger (decided by controls on the web/mobile client)
 
+    Array positions:
     Temp:   cur min max avg lLm hLm
             0   1   2   3   4   5
-    Humid:  cur min max avg lLm hLm :: lLm might not be used and stays 0
+    Humid:  cur min max avg lLm hLm :: lLm, hLm not used and stays -1000
             6   7   8   9   10  11
-    Light:  cur min max avg lLm hLm
+    Light:  cur min max avg lLm hLm :: lLm, hLm not used and stays -1000
             12  13  14  15  16  17
-    CO2:    cur min max avg lLm hLm :: lLm might not be used and stays 0
+    CO2:    cur min max avg lLm hLm :: lLm might not used and stays -1000
             18  19  20  21  22  23
-    Dust:   cur min max avg lLm hLm :: lLm might not be used and stays 0
+    Dust:   cur min max avg lLm hLm :: lLm might not used and stays -1000
             24  25  26  27  28  29
      */
 
     private float[] valueTable;
     private static final int TABLE_ROW_OFFSET = 6;
 
-    /*Array of the number of measurement of each value type, used for calculating wighted rolling average
+    /*Array of the number of measurement of each value type, used for calculating exponential moving average
             tmp hum lgt co2 dst
             0   1   2   3   4
      */
@@ -63,6 +64,7 @@ public class SensorValues {
                 this.valueTable[2 + offset] = value;
             }
 
+            //Calculate exponential moving average
             float a;
             if(getAvgCount(v) < AVERAGE_MEASUREMENT_LIMIT)  {
                 a = 2 / (1 + (float)getAvgCount(v));
@@ -71,7 +73,6 @@ public class SensorValues {
                 a = 2 / (1 + (float)AVERAGE_MEASUREMENT_LIMIT);
             }
 
-            //Calculate rolling, weighted average
             this.valueTable[3 + offset] = (value * a) + (this.valueTable[3 + offset] * (1 - a));
         }
     }
